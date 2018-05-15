@@ -209,6 +209,19 @@ class Game
         return $this->hands;
     }
 
+    /**
+     * @return Hand
+     */
+    public function getHand(User $user): Hand
+    {
+        foreach ($this->hands as $hand) {
+            if ($hand->getOwner() == $user) {
+                return $hand;
+            }
+        }
+        return null;
+    }
+
     public function addHand(Hand $hand): self
     {
         if (!$this->hands->contains($hand)) {

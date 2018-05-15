@@ -31,7 +31,8 @@ class Hand
     private $Owner;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Card", mappedBy="hand")
+     * @ORM\OneToMany(targetEntity="App\Entity\Card", mappedBy="hand", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"position" = "asc"})
      */
     private $cards;
 
@@ -96,6 +97,25 @@ class Hand
                 $card->setHand(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMaxPosition(): float
+    {
+        $max = 0;
+        foreach ($this->cards as $card) {
+            if ($card->getPosition() > $max) {
+                $max = $card->getPosition();
+            }
+        }
+        return $max;
+    }
+
+    public function pushCard(Card $card): self
+    {
+        $this->addCard($card);
+        $card->setPosition($this->getMaxPosition() + 1);
 
         return $this;
     }

@@ -6,6 +6,8 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
+    	{% if app.user %}Welcome {{app.user}}! <a href="{{ path('fos_user_security_logout') }}">Log out</a>{% else %}<a href="{{ path('fos_user_security_login') }}">Log in</a>{% endif %}
+    	<br>
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
     </body>

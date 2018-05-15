@@ -25,7 +25,8 @@ class Board
     private $game;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Card", mappedBy="board")
+     * @ORM\OneToMany(targetEntity="App\Entity\Card", mappedBy="board", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"position" = "asc"})
      */
     private $cards;
 

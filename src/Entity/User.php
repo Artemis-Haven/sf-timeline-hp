@@ -74,6 +74,19 @@ class User extends BaseUser
         return $this->hands;
     }
 
+    /**
+     * @return Hand
+     */
+    public function getHand(Game $game): Hand
+    {
+        foreach ($this->hands as $hand) {
+            if ($hand->getGame() == $game) {
+                return $hand;
+            }
+        }
+        return null;
+    }
+
     public function addHand(Hand $hand): self
     {
         if (!$this->hands->contains($hand)) {

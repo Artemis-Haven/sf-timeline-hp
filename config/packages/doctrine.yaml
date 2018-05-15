@@ -19,9 +19,6 @@ doctrine:
         password: "%database_password%"
         server_version: '5.7'
         charset: utf8
-        default_table_options:
-            charset: utf8
-            collate: utf8mb4_unicode_ci
 
         url: '%env(resolve:DATABASE_URL)%'
     orm:

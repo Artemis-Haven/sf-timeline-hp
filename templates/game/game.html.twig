@@ -6,16 +6,27 @@
 
 <a href="{{ path('index') }}">Back</a>
 <div class="example-wrapper">
-    <h1>Name: {{game}}</h1>
+    <h1>Name: {{game}} <small><a href="{{ path('quit_game', {'id': game.id}) }}">{% if game.started %}Abandon {% else %}Quit{% endif %}</a></small></h1>
 
     Members:
     <ul>
     	{% for user in game.members %}
-			<li>{{user}}</li>
+			<li>{{user}} {% if game.started %}({{user.getHand(game).cards|length}}){% endif %}</li>
 		{% else %}
 			<li>No user</li>
     	{% endfor %}
     </ul>
+
+    {% if game.started %}
+        Board:
+        <ul>
+            {% for card in game.board.cards %}
+                <li>{{card}}</li>
+            {% else %}
+                <li>No item yet</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     {% if game.started %}
         Deck: {{game.deck.cards|length}} <br>

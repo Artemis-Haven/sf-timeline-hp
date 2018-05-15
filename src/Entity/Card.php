@@ -61,6 +61,11 @@ class Card
      */
     private $position;
 
+    public function __toString()
+    {
+        return $this->title;
+    }
+
     public function __construct()
     {
         $this->createdAt = new \DateTime('now');

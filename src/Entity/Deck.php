@@ -25,7 +25,8 @@ class Deck
     private $game;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Card", mappedBy="deck")
+     * @ORM\OneToMany(targetEntity="App\Entity\Card", mappedBy="deck", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"position" = "asc"})
      */
     private $cards;
 
@@ -80,5 +81,23 @@ class Deck
         }
 
         return $this;
+    }
+
+    public function getMaxPosition(): float
+    {
+        $max = 0;
+        foreach ($this->cards as $card) {
+            if ($card->getPosition() > $max) {
+                $max = $card->getPosition();
+            }
+        }
+        return $max;
+    }
+
+    public function popCard(): Card
+    {
+        $card = $this->getCards()->first();
+        $this->removeCard($card);
+        return $card;
     }
 }

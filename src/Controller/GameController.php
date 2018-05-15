@@ -84,6 +84,7 @@ class GameController extends Controller
 
     		$referenceCards = $em->getRepository('App:Reference')->findAll();
     		shuffle($referenceCards);
+            // Creation of the Deck
     		foreach ($referenceCards as $key => $ref) {
     			$card = new Card();
     			$card->setTitle($ref->getTitle());
@@ -94,6 +95,17 @@ class GameController extends Controller
     			$deck->addCard($card);
     			$em->persist($card);
     		}
+            // Each player picks 2 cards from the Deck
+            for ($i=0; $i < 2; $i++) { 
+                foreach ($game->getMembers() as $user) {
+                    $pickedCard = $game->getDeck()->popCard();
+                    $game->getHand($user)->pushCard($pickedCard);
+                }
+            }
+            // One card is placed on the Board
+            $pickedCard = $game->getDeck()->popCard();
+            $game->getBoard()->addCard($card);
+            $card->setPosition(50);
 
     		$em->flush();
     	}

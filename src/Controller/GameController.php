@@ -13,6 +13,7 @@ use App\Entity\Game;
 use App\Entity\Board;
 use App\Entity\Hand;
 use App\Entity\Deck;
+use App\Entity\Card;
 
 class GameController extends Controller
 {
@@ -65,6 +66,7 @@ class GameController extends Controller
     public function start(Game $game)
     {
     	$em = $this->getDoctrine()->getManager();
+
     	if (!$game->getStarted() && !$game->getEnded()) {
     		$game->setStarted(true);
     		$board = new Board();
@@ -79,6 +81,20 @@ class GameController extends Controller
     			$game->addHand($hand);
     			$em->persist($hand);
     		}
+
+    		$referenceCards = $em->getRepository('App:Reference')->findAll();
+    		shuffle($referenceCards);
+    		foreach ($referenceCards as $key => $ref) {
+    			$card = new Card();
+    			$card->setTitle($ref->getTitle());
+    			$card->setDisplayedDate($ref->getDisplayedDate());
+    			$card->setStartDate($ref->getStartDate());
+    			$card->setEndDate($ref->getEndDate());
+    			$card->setPosition($key);
+    			$deck->addCard($card);
+    			$em->persist($card);
+    		}
+
     		$em->flush();
     	}
 

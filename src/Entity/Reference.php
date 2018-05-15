@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\CardRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\ReferenceRepository")
  */
-class Card
+class Reference
 {
     /**
      * @ORM\Id()
@@ -37,34 +37,13 @@ class Card
     private $endDate;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="datetime")
      */
-    private $selected;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Deck", inversedBy="cards")
-     */
-    private $deck;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Board", inversedBy="cards")
-     */
-    private $board;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Hand", inversedBy="cards")
-     */
-    private $hand;
-
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     */
-    private $position;
+    private $createdAt;
 
     public function __construct()
     {
         $this->createdAt = new \DateTime('now');
-        $this->selected = false;
     }
 
     public function getId()
@@ -120,62 +99,14 @@ class Card
         return $this;
     }
 
-    public function getSelected(): ?bool
+    public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->selected;
+        return $this->createdAt;
     }
 
-    public function setSelected(bool $selected): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
-        $this->selected = $selected;
-
-        return $this;
-    }
-
-    public function getDeck(): ?Deck
-    {
-        return $this->deck;
-    }
-
-    public function setDeck(?Deck $deck): self
-    {
-        $this->deck = $deck;
-
-        return $this;
-    }
-
-    public function getBoard(): ?Board
-    {
-        return $this->board;
-    }
-
-    public function setBoard(?Board $board): self
-    {
-        $this->board = $board;
-
-        return $this;
-    }
-
-    public function getHand(): ?Hand
-    {
-        return $this->hand;
-    }
-
-    public function setHand(?Hand $hand): self
-    {
-        $this->hand = $hand;
-
-        return $this;
-    }
-
-    public function getPosition(): ?float
-    {
-        return $this->position;
-    }
-
-    public function setPosition(?float $position): self
-    {
-        $this->position = $position;
+        $this->createdAt = $createdAt;
 
         return $this;
     }

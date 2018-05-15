@@ -119,20 +119,32 @@ class GameController extends Controller
     
     /**
      * @Route("/quit-game-{id}", name="quit_game")
-	 * @ParamConverter("game", class="App:Game")
+     * @ParamConverter("game", class="App:Game")
      * @Template
      */
     public function quit(Game $game)
     {
-    	$em = $this->getDoctrine()->getManager();
-    	if (!$game->getStarted() && !$game->getEnded()) {
-    		$game->removeMember($this->getUser());
-    		if ($game->getMembers()->isEmpty()) {
-    			$em->remove($game);
-    		}
-    		$em->flush();
-    	}
+        $em = $this->getDoctrine()->getManager();
+        if (!$game->getEnded()) {
+            if (!$game->getStarted()) { // Before the game begins
+                $game->removeMember($this->getUser());
+            } else { // During the game (= abandon)
+                $game->removeMember($this->getUser());
+                $hand = $game->getHand($this->getUser());
+                $maxDeckPosition = $game->getDeck()->getMaxPosition();
+                foreach ($hand->getCards() as $key => $card) {
+                    $hand->removeCard($card);
+                    $game->getDeck()->addCard($card);
+                    $card->setPosition($maxDeckPosition+$key);
+                }
+            }
+            if ($game->getMembers()->isEmpty()) {
+                $em->remove($game);
+            }
+            $em->flush();
+        }
 
         return $this->redirectToRoute('index');
     }
+    
 }

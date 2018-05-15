@@ -4,6 +4,7 @@
 
 {% block body %}
 
+<a href="{{ path('index') }}">Back</a>
 <div class="example-wrapper">
     <h1>Name: {{game}}</h1>
 
@@ -15,7 +16,12 @@
 			<li>No user</li>
     	{% endfor %}
     </ul>
-	
+
+    {% if game.started %}
+        Deck: {{game.deck.cards|length}} <br>
+    {% else %}
+        <a href="{{ path('start_game', {'id': game.id}) }}">Start</a>
+	{% endif %}
 	<hr>
 </div>
 {% endblock %}

@@ -10,7 +10,15 @@
     Existing items:
     <ul>
     	{% for game in games %}
-			<li><a href="{{ path('game', {'id': game.id}) }}">{{ game }}</a> : {{ game.members|join(', ') }}</li>
+			<li>
+				<a href="{{ path('game', {'id': game.id}) }}">{{ game }}</a> : 
+				{{ game.members|join(', ') }} 
+				{% if app.user in game.members %} 
+					<a href="{{ path('quit_game', {'id': game.id}) }}">Quit</a> 
+				{% else %} 
+					<a href="{{ path('join_game', {'id': game.id}) }}">Join</a> 
+				{% endif %}
+			</li>
 		{% else %}
 			<li>No item yet</li>
     	{% endfor %}

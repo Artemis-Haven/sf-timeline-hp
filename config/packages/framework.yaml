@@ -1,5 +1,8 @@
 framework:
+    default_locale:  "%locale%"
+    translator:      { fallbacks: ["%locale%"] }
     secret: '%env(APP_SECRET)%'
+    form: { enabled: true }
     #default_locale: en
     #csrf_protection: true
     #http_method_override: true
@@ -28,3 +31,6 @@ framework:
 
         # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
         #app: cache.adapter.apcu
+
+    templating:
+        engines: ['twig', 'php']

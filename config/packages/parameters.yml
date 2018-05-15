@@ -1,0 +1,15 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_driver: pdo_pgsql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: timeline
+    database_user: alternative
+    database_password: password
+    mailer_transport: mail
+    mailer_host: test@mail.fr
+    mailer_port: 587
+    mailer_user: Test
+    mailer_password: '@@3T56f!2d'
+    secret: ThisTokenIsNotSoSecretChangeIt
+    locale: fr

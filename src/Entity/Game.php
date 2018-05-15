@@ -63,10 +63,17 @@ class Game
      */
     private $hands;
 
+    public function __toString()
+    {
+        return $this->name;
+    }
+
     public function __construct()
     {
         $this->members = new ArrayCollection();
         $this->hands = new ArrayCollection();
+        $this->started = false;
+        $this->ended = false;
     }
 
     public function getId()

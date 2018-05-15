@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello World!{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Hello World! ✅</h1>
+
+    Existing items:
+    <ul>
+    	{% for game in games %}
+			<li><a href="{{ path('game', {'id': game.id}) }}">{{ game }}</a> : {{ game.members|join(', ') }}</li>
+		{% else %}
+			<li>No item yet</li>
+    	{% endfor %}
+    </ul>
+	
+	<hr>
+
+    Add a new item: <br>
+    {{ form(newGameForm) }}
+</div>
+{% endblock %}

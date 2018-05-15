@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello World!{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Name: {{game}}</h1>
+
+    Members:
+    <ul>
+    	{% for user in game.members %}
+			<li>{{user}}</li>
+		{% else %}
+			<li>No user</li>
+    	{% endfor %}
+    </ul>
+	
+	<hr>
+</div>
+{% endblock %}

@@ -34,16 +34,18 @@
         <a href="{{ path('start_game', {'id': game.id}) }}">Start</a>
 	{% endif %}
 	<hr>
-    <div id="ws-content-receiver">
-        Connecting...
-    </div>
+
+    <div id="ws-content-receiver"></div>
+    <input type="text" id="ws-content-to-send" />
+    <button id="ws-send-content">Send</button>
 </div>
 {% endblock %}
 
 
 {% block javascripts %}
   <script type="text/javascript">
-  var wsUrl = 'localhost:8080';
+    var wsUrl = 'localhost:8080';
+    var userName = "{{ app.user | default('Anonymous')}}";
   </script>
   <script type="text/javascript" src="{{ asset('build/js/sf-websocket.js') }}"></script>
 {% endblock %}

@@ -46,6 +46,7 @@
   <script type="text/javascript">
     var wsUrl = 'localhost:8080';
     var userName = "{{ app.user | default('Anonymous')}}";
+    var channel = "{{ game.id }}";
   </script>
   <script type="text/javascript" src="{{ asset('build/js/sf-websocket.js') }}"></script>
 {% endblock %}

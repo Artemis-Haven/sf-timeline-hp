@@ -4,7 +4,6 @@
 
   var _receiver = document.getElementById('ws-content-receiver');
   var ws = new WebSocket('ws://' + wsUrl);
-  var defaultChannel = 'general';
   var botName = 'ChatBot';
 
   var addMessageToChannel = function(message) {
@@ -14,7 +13,7 @@
   var botMessageToGeneral = function (message) {
     return addMessageToChannel(JSON.stringify({
       action: 'message',
-      channel: defaultChannel,
+      channel: channel,
       user: botName,
       message: message
     }));
@@ -23,7 +22,7 @@
   ws.onopen = function () {
     ws.send(JSON.stringify({
       action: 'subscribe',
-      channel: defaultChannel,
+      channel: channel,
       user: userName
     }));
   };
@@ -55,7 +54,7 @@
       action: 'message',
       user: userName,
       message: content,
-      channel: 'general'
+      channel: channel
     }));
 
     // Reset input

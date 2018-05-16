@@ -53,8 +53,7 @@ class Chat implements MessageComponentInterface
         if ($messageData === null) {
             return false;
         }
-
-        echo $message.'\n';
+        echo sprintf('- %s \n', $message);
         $action = $messageData->action ?? 'unknown';
         $channel = $messageData->channel ?? $this->defaultChannel;
         $user = $messageData->user ?? $this->botName;

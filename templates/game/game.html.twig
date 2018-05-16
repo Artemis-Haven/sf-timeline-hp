@@ -34,5 +34,16 @@
         <a href="{{ path('start_game', {'id': game.id}) }}">Start</a>
 	{% endif %}
 	<hr>
+    <div id="ws-content-receiver">
+        Connecting...
+    </div>
 </div>
+{% endblock %}
+
+
+{% block javascripts %}
+  <script type="text/javascript">
+  var wsUrl = 'localhost:8080';
+  </script>
+  <script type="text/javascript" src="{{ asset('build/js/sf-websocket.js') }}"></script>
 {% endblock %}

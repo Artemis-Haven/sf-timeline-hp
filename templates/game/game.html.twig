@@ -3,42 +3,57 @@
 {% block title %}Hello World!{% endblock %}
 
 {% block body %}
-
-<a href="{{ path('index') }}">Back</a>
-<div class="example-wrapper">
+<div id="board-container">
+    
     <h1>Name: {{game}} <small><a href="{{ path('quit_game', {'id': game.id}) }}">{% if game.started %}Abandon {% else %}Quit{% endif %}</a></small></h1>
-
-    Members:
-    <ul>
-    	{% for user in game.members %}
-			<li>{{user}} {% if game.started %}({{user.getHand(game).cards|length}}){% endif %}</li>
-		{% else %}
-			<li>No user</li>
-    	{% endfor %}
-    </ul>
 
     {% if game.started %}
         Board:
-        <ul>
             {% for card in game.board.cards %}
-                <li>{{card}}</li>
+                <article class="card" data-id='{{card.id}}'>{{card}} <br> {{card.displayedDate}}</article>
             {% else %}
-                <li>No item yet</li>
+                No item yet
             {% endfor %}
-        </ul>
     {% endif %}
+    
+    <hr>
 
     {% if game.started %}
-        Deck: {{game.deck.cards|length}} <br>
+        Deck: {{game.deck.cards|length}}
+        <hr>
+        Hand: <br>
+            {% for card in app.user.getHand(game).cards %}
+                <article class="card" data-id='{{card.id}}'>{{card}}</article>
+            {% else %}
+                No item yet
+            {% endfor %}
     {% else %}
         <a href="{{ path('start_game', {'id': game.id}) }}">Start</a>
-	{% endif %}
-	<hr>
+    {% endif %}
+    <hr>
 
-    <div id="ws-content-receiver"></div>
+
+</div>
+<div id="board-sidebar">
+    
+    {% for opponent in game.members if opponent != app.user  %}
+        <aside class="opponent">
+            {{ opponent }} 
+            {% if game.started %}
+                ({{opponent.getHand(game).cards|length}}) <br>
+                {% for card in opponent.getHand(game).cards %}
+                    <article class="card" data-id='{{card.id}}'>{{card}}</article>
+                {% endfor %}
+            {% endif %}
+        </aside>
+    {% endfor %}
+    <aside id="ws-content-receiver"></aside>
     <input type="text" id="ws-content-to-send" />
     <button id="ws-send-content">Send</button>
+
 </div>
+
+
 {% endblock %}
 
 
@@ -48,5 +63,4 @@
     var userName = "{{ app.user | default('Anonymous')}}";
     var channel = "{{ game.id }}";
   </script>
-  <script type="text/javascript" src="{{ asset('build/js/sf-websocket.js') }}"></script>
 {% endblock %}

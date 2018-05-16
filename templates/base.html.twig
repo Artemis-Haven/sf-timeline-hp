@@ -3,12 +3,39 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" href="{{ asset('build/css/app.css') }}">
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-    	{% if app.user %}Welcome {{app.user}}! <a href="{{ path('fos_user_security_logout') }}">Log out</a>{% else %}<a href="{{ path('fos_user_security_login') }}">Log in</a>{% endif %}
-    	<br>
-        {% block body %}{% endblock %}
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ path('index') }}">
+                        <img alt="Index" src="...">
+                    </a>
+                </div>
+
+                  <ul class="nav navbar-nav">
+                    {% if app.user %}
+                        <p class="navbar-text">Welcome {{app.user}}!</p> 
+                        <li><a href="{{ path('fos_user_security_logout') }}">Log out</a></li>
+                    {% else %}
+                        <li><a href="{{ path('fos_user_security_login') }}">Log in</a></li>
+                    {% endif %}
+                    <li><a href="{{ path('reference_index') }}">Rerefence</a></li>
+                  </ul>
+            </div>
+        </nav>
+
+        <section id="main-container">
+            {% block body %}{% endblock %}
+        </section>
+        
+        <script type="text/javascript">
+            var wsUrl = 'localhost:8080';
+        </script>
+
+        <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

@@ -1,0 +1,31 @@
+// customize some Bootstrap variables
+$brand-primary: darken(#428bca, 20%);
+
+// the ~ allows you to reference things in node_modules
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+
+html, body, #main-container {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#main-container {
+	padding-top: 50px;
+	display: flex;
+}
+
+#board-container {
+  flex: 1;
+}
+
+#board-sidebar {
+  flex: 0 0 150px;
+}
+
+.card {
+	display: inline-block;
+	padding: 3px;
+	box-shadow: 1px 1px 2px 1px #ccc;
+	border-radius: 3px;
+}

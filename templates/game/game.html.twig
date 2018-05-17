@@ -10,10 +10,10 @@
     {% if game.started %}
         Board:
             {% for card in game.board.cards %}
+                <article class="card-placeholder"><div></div></article>
                 <article class="card" data-id='{{card.id}}'>{{card}} <br> {{card.displayedDate}}</article>
-            {% else %}
-                No item yet
             {% endfor %}
+            <article class="card-placeholder"><div></div></article>
     {% endif %}
     
     <hr>
@@ -21,12 +21,14 @@
     {% if game.started %}
         Deck: {{game.deck.cards|length}}
         <hr>
-        Hand: <br>
+        <div id="hand-container">
+            Hand: <br>
             {% for card in app.user.getHand(game).cards %}
                 <article class="card" data-id='{{card.id}}'>{{card}}</article>
             {% else %}
                 No item yet
             {% endfor %}
+        </div>  
     {% else %}
         <a href="{{ path('start_game', {'id': game.id}) }}">Start</a>
     {% endif %}
@@ -58,9 +60,10 @@
 
 
 {% block javascripts %}
-  <script type="text/javascript">
-    var wsUrl = 'localhost:8080';
-    var userName = "{{ app.user | default('Anonymous')}}";
-    var channel = "{{ game.id }}";
-  </script>
+    <script type="text/javascript" src="{{ asset('build/js/game.js') }}"></script>
+    <script type="text/javascript">
+        var wsUrl = 'localhost:8080';
+        var userName = "{{ app.user | default('Anonymous')}}";
+        var channel = "{{ game.id }}";
+    </script>
 {% endblock %}

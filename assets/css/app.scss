@@ -25,7 +25,46 @@ html, body, #main-container {
 
 .card {
 	display: inline-block;
+	margin: 3px 5px;
 	padding: 3px;
+	height: 70px;
+	width: 100px;
+    background-color: #ddd;
+    border: 5px #fff solid;
 	box-shadow: 1px 1px 2px 1px #ccc;
-	border-radius: 3px;
+	border-radius: 5px;
+	vertical-align: top;
+    text-align: center;
+}
+
+.card-placeholder {
+	display: inline-block;
+	margin: 3px 5px;
+	height: 70px;
+	width: 50px;
+	background-color: #eee;
+    opacity: 0;
+    border:  5px #ddd dashed;
+    border-radius: 10px;
+	vertical-align: top;
+    transition-property: width, opacity;
+    transition-duration: 500ms;
+    transition-timing-function: ease-in;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+.card-placeholder.ui-droppable-hover {
+    width: 100px;
+    opacity: 0.5;
+}
+.card-placeholder > div {
+    display: flex;
+    height: 1px;
+    width: 1px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.5);
+    margin: 25px auto auto auto;
+    text-align: center;
 }

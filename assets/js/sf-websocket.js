@@ -3,7 +3,7 @@
   'use strict';
 
   var _receiver = document.getElementById('ws-content-receiver');
-  var ws = new WebSocket('ws://' + wsUrl);
+  global.ws = new WebSocket('ws://' + wsUrl);
   var botName = 'ChatBot';
 
   var addMessageToChannel = function(message) {
@@ -28,7 +28,15 @@
   };
 
   ws.onmessage = function (event) {
-    addMessageToChannel(event.data);
+    var data = JSON.parse(event.data);
+    if (data.action == 'gameAction') {
+      if (data.data.action == 'dropCard' && data.user != userName) {
+        var card = $(".card[data-id="+data.data.cardId+"]").detach();
+        card.insertAfter(".card[data-id="+data.data.idBefore+"]");
+      }
+    } else {
+      addMessageToChannel(event.data);
+    }
   };
 
   ws.onclose = function () {

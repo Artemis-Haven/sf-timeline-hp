@@ -6,7 +6,10 @@
 <div id="board-container">
     
     <h1>Name: {{game}} <small><a href="{{ path('quit_game', {'id': game.id}) }}">{% if game.started %}Abandon {% else %}Quit{% endif %}</a></small></h1>
-
+    {% if game.started %}Turn: {{game.turn}}{% endif %}
+    
+    <hr>
+    
     {% if game.started %}
         Board:
             {% for card in game.board.cards %}

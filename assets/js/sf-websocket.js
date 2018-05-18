@@ -10,15 +10,6 @@
     _receiver.innerHTML += '<div class="message">' + message + '</div>';
   };
 
-  var botMessageToGeneral = function (message) {
-    return addMessageToChannel(JSON.stringify({
-      action: 'message',
-      channel: channel,
-      user: botName,
-      message: message
-    }));
-  };
-
   ws.onopen = function () {
     ws.send(JSON.stringify({
       action: 'subscribe',
@@ -29,10 +20,14 @@
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
-    if (data.action == 'gameAction') {
-      if (data.data.action == 'dropCard' && data.user != userName) {
-        var card = $(".card[data-id="+data.data.cardId+"]").detach();
+    if (data.action == 'game-dropCard' && data.user != userName) {
+      var card = $(".card[data-id="+data.data.cardId+"]").detach();
+      if (data.data.idBefore) {
         card.insertAfter(".card[data-id="+data.data.idBefore+"]");
+        $('<article class="card-placeholder"></article>').insertBefore(card).droppable(placeholderDropSettings);
+      } else {
+        card.insertBefore(".card[data-id="+data.data.idAfter+"]");
+        $('<article class="card-placeholder"></article>').insertAfter(card).droppable(placeholderDropSettings);
       }
     } else {
       addMessageToChannel(event.data);
@@ -40,11 +35,11 @@
   };
 
   ws.onclose = function () {
-    botMessageToGeneral('Connection closed');
+    addMessageToChannel('Connection closed');
   };
 
   ws.onerror = function () {
-    botMessageToGeneral('An error occured!');
+    addMessageToChannel('An error occured!');
   };
 
 
@@ -61,8 +56,8 @@
     ws.send(JSON.stringify({
       action: 'message',
       user: userName,
-      message: content,
-      channel: channel
+      channel: channel,
+      data: {message: content}
     }));
 
     // Reset input

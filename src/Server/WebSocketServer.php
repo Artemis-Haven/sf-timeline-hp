@@ -55,31 +55,28 @@ class WebSocketServer implements MessageComponentInterface
 
     public function onMessage(ConnectionInterface $conn, $message)
     {
-        $messageData = json_decode($message);
+        $messageData = json_decode($message, true);
         if ($messageData === null) {
             return false;
         }
         echo sprintf("- %s \n", $message);
-        $action = $messageData->action ?? 'unknown';
-        $channel = $messageData->channel ?? $this->defaultChannel;
-        $user = $messageData->user ?? $this->botName;
-        $message = $messageData->message ?? '';
-        $gameActionData = $messageData->gameActionData ?? ['action' => null];
+        $action = $messageData['action'] ?? 'unknown';
+        $channel = $messageData['channel'] ?? $this->defaultChannel;
+        $user = $messageData['user'] ?? $this->botName;
+        $data = $messageData['data'] ?? [];
 
-        switch ($action) {
-            case 'subscribe':
-                $this->subscribeToChannel($conn, $channel, $user);
-                return true;
-            case 'unsubscribe':
-                $this->unsubscribeFromChannel($conn, $channel, $user);
-                return true;
-            case 'message':
-                return $this->chat->sendMessageToChannel($conn, $this->users, $channel, $user, $message);
-            case 'gameAction':
-                return $this->gameActions->process($conn, $this->users, $channel, $user, $gameActionData);
-            default:
-                echo sprintf('Action "%s" is not supported yet!', $action);
-                break;
+        if ($action == 'subscribe') {
+            $this->subscribeToChannel($conn, $channel, $user);
+            return true;
+        } else if ($action == 'unsubscribe') {
+            $this->unsubscribeFromChannel($conn, $channel, $user);
+            return true;
+        } else if ($action == 'message') {
+            return $this->chat->sendMessageToChannel($conn, $this->users, $channel, $user, $data);
+        } else if (substr($action, 0, 5) == 'game-') {
+            return $this->gameActions->process($conn, $this->users, $action, $channel, $user, $data);
+        } else {
+            echo sprintf('Action "%s" is not supported yet!', $action);
         }
         return false;
     }
@@ -91,7 +88,7 @@ class WebSocketServer implements MessageComponentInterface
             $conn,
             $this->users,
             $channel,
-            $user.' joined #'.$channel
+            ['message' => $user.' joined #'.$channel]
         );
     }
 
@@ -104,7 +101,7 @@ class WebSocketServer implements MessageComponentInterface
             $conn,
             $this->users,
             $channel,
-            $user.' left #'.$channel
+            ['message' => $user.' left #'.$channel]
         );
     }
 

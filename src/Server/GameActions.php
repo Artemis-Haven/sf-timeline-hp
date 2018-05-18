@@ -17,10 +17,11 @@ class GameActions
         $this->container = $container;
     }
 
-    public function process(ConnectionInterface $conn, $users, $channel, $user, $data)
+    public function process(ConnectionInterface $conn, $users, $action, $channel, $user, $data)
     {
         $this->connection = $conn;
         $this->users = $users;
+        $this->action = $action;
         $this->channel = $channel;
         $this->user = $user;
 
@@ -29,11 +30,11 @@ class GameActions
             return false;
         }
 
-        switch ($data->action) {
-            case 'dragCard':
+        switch ($action) {
+            case 'game-dragCard':
                 $this->dragCard();
                 return true;
-            case 'dropCard':
+            case 'game-dropCard':
                 $this->dropCard($data);
                 return true;
             default:
@@ -59,7 +60,7 @@ class GameActions
         foreach ($this->users as $connectionId => $userConnection) {
             if (array_key_exists($this->channel, $userConnection['channels'])) {
                 $userConnection['connection']->send(json_encode([
-                    'action' => 'gameAction',
+                    'action' => $this->action,
                     'channel' => $this->channel,
                     'user' => $this->user,
                     'data' => $data
@@ -73,10 +74,10 @@ class GameActions
         foreach ($this->users as $connectionId => $userConnection) {
             if (array_key_exists($this->channel, $userConnection['channels'])) {
                 $userConnection['connection']->send(json_encode([
-                    'action' => 'gameAction',
+                    'action' => 'message',
                     'channel' => $this->channel,
                     'user' => 'Auto-message',
-                    'message' => $message
+                    'data' => ['message' => $message]
                 ]));
             }
         }

@@ -25,7 +25,7 @@ class Chat
                     'action' => 'message',
                     'channel' => $channel,
                     'user' => $user,
-                    'message' => $message
+                    'data' => $message
                 ]));
             }
         }

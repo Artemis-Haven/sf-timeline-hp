@@ -52,7 +52,11 @@
             {% endif %}
         </aside>
     {% endfor %}
-    <aside id="ws-content-receiver"></aside>
+    <aside id="ws-content-receiver">
+        {% for msg in game.messages %}
+            <p>{{ msg.sender }} : {{ msg.content }}</p>
+        {% endfor %}
+    </aside>
     <input type="text" id="ws-content-to-send" />
     <button id="ws-send-content">Send</button>
 

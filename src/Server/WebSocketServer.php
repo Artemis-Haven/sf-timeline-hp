@@ -27,12 +27,6 @@ class WebSocketServer implements MessageComponentInterface
     public function onOpen(ConnectionInterface $conn)
     {
         $this->clients->attach($conn);
-        /*$conn->send(json_encode([
-            'action'  => 'message',
-            'channel' => $this->defaultChannel,
-            'user'    => $this->botName,
-            'message' => sprintf('Connection established. Welcome #%d!', $conn->resourceId),
-        ]));*/
         $this->users[$conn->resourceId] = [
             'connection' => $conn,
             'user' => '',
@@ -42,8 +36,12 @@ class WebSocketServer implements MessageComponentInterface
 
     public function onClose(ConnectionInterface $closedConnection)
     {
+        $username = $this->users[$closedConnection->resourceId]['user'];
         $this->clients->detach($closedConnection);
         echo sprintf("Connection #%d has disconnected\n", $closedConnection->resourceId);
+        foreach ($this->users[$closedConnection->resourceId]['channels'] as $channel) {
+            $this->unsubscribeFromChannel($closedConnection, $channel, $username);
+        }
         unset($this->users[$closedConnection->resourceId]);
     }
 
@@ -84,6 +82,7 @@ class WebSocketServer implements MessageComponentInterface
     private function subscribeToChannel(ConnectionInterface $conn, $channel, $user)
     {
         $this->users[$conn->resourceId]['channels'][$channel] = $channel;
+        $this->users[$conn->resourceId]['user'] = $user;
         $this->chat->sendGeneralInfoToChannel(
             $conn,
             $this->users,
@@ -94,33 +93,15 @@ class WebSocketServer implements MessageComponentInterface
 
     private function unsubscribeFromChannel(ConnectionInterface $conn, $channel, $user)
     {
-        if (array_key_exists($channel, $this->users[$conn->resourceId]['channels'])) {
-            unset($this->users[$conn->resourceId]['channels']);
-        }
         $this->chat->sendGeneralInfoToChannel(
             $conn,
             $this->users,
             $channel,
             ['message' => $user.' left #'.$channel]
         );
+        if (array_key_exists($channel, $this->users[$conn->resourceId]['channels'])) {
+            unset($this->users[$conn->resourceId]['channels']);
+        }
     }
-
-    /*private function sendMessageToChannel(ConnectionInterface $conn, $channel, $user, $message)
-    {
-        if (!isset($this->users[$conn->resourceId]['channels'][$channel])) {
-            return false;
-        }
-       foreach ($this->users as $connectionId => $userConnection) {
-            if (array_key_exists($channel, $userConnection['channels'])) {
-                $userConnection['connection']->send(json_encode([
-                    'action' => 'message',
-                    'channel' => $channel,
-                    'user' => $user,
-                    'message' => $message
-                ]));
-            }
-        }
-        return true;
-    }*/
 
 }

@@ -29,7 +29,9 @@
         card.insertBefore(".card[data-id="+data.data.idAfter+"]");
         $('<article class="card-placeholder"></article>').insertAfter(card).droppable(placeholderDropSettings);
       }
-    } else {
+    } else if (data.action == 'message') {
+      addMessageToChannel(data.user+' : '+data.data.message);
+    }else {
       addMessageToChannel(event.data);
     }
   };

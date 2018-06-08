@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GameActions
 {
-    private $container;
+    private $em;
     private $connection;
     private $users;
     private $channel;
@@ -14,7 +14,7 @@ class GameActions
 
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
+        $this->em = $container->get('doctrine.orm.entity_manager');
     }
 
     public function process(ConnectionInterface $conn, $users, $action, $channel, $user, $data)
@@ -31,8 +31,11 @@ class GameActions
         }
 
         switch ($action) {
+            case 'game-releaseCard':
+                $this->releaseCard($data);
+                return true;
             case 'game-dragCard':
-                $this->dragCard();
+                $this->dragCard($data);
                 return true;
             case 'game-dropCard':
                 $this->dropCard($data);
@@ -45,13 +48,30 @@ class GameActions
         return true;
     }
 
-    private function dragCard()
+    private function releaseCard($data)
     {
-        $this->sendMessageToChannel('Card dragged by '.$this->user);
+        $this->sendDataToChannel($data);
+    }
+
+    private function dragCard($data)
+    {
+        $this->sendDataToChannel($data);
     }
 
     private function dropCard($data)
     {
+        $card = $this->em->getRepository('App:Card')->find($data['cardId']);
+        $cardBefore = (array_key_exists('idBefore', $data) ? $this->em->getRepository('App:Card')->find($data['idBefore']) : null);
+        $cardAfter = (array_key_exists('idAfter', $data) ? $this->em->getRepository('App:Card')->find($data['idAfter']) : null);
+        $game = $card->getHand()->getGame();
+
+        $card->getHand()->removeCard($card);
+        $game->getBoard()->addCard($card);
+        $positionBefore = ($cardBefore ? $cardBefore->getPosition() : -1000);
+        $positionAfter = ($cardAfter ? $cardAfter->getPosition() : 1000);
+        $card->setPosition(($positionAfter+$positionBefore)/2);
+        $this->em->flush();
+
         $this->sendDataToChannel($data);
     }
 

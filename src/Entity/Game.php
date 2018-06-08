@@ -65,6 +65,7 @@ class Game
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="game", orphanRemoval=true)
+     * @ORM\OrderBy({"createdAt" = "ASC"})
      */
     private $messages;
 
@@ -276,6 +277,20 @@ class Game
             // set the owning side to null (unless already changed)
             if ($message->getGame() === $this) {
                 $message->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function nextTurn(): self
+    {
+        foreach ($this->members as $member) {
+            if ($member == $this->turn) {
+                $this->turn = $this->members->next();
+                if ($this->turn == null) {
+                    $this->turn == $this->members->first();
+                }
             }
         }
 

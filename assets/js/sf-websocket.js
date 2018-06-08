@@ -21,6 +21,7 @@
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
     if (data.action == 'game-dropCard' && data.user != userName) {
+      $('.card').removeClass('card-selected');
       var card = $(".card[data-id="+data.data.cardId+"]").detach();
       if (data.data.idBefore) {
         card.insertAfter(".card[data-id="+data.data.idBefore+"]");
@@ -29,10 +30,14 @@
         card.insertBefore(".card[data-id="+data.data.idAfter+"]");
         $('<article class="card-placeholder"></article>').insertAfter(card).droppable(placeholderDropSettings);
       }
+    } else if (data.action == 'game-dragCard' && data.user != userName) {
+      var card = $(".card[data-id="+data.data.cardId+"]").addClass('card-selected');
+    } else if (data.action == 'game-releaseCard' && data.user != userName) {
+      var card = $(".card[data-id="+data.data.cardId+"]").removeClass('card-selected');
     } else if (data.action == 'message') {
       addMessageToChannel(data.user+' : '+data.data.message);
-    }else {
-      addMessageToChannel(event.data);
+    } else {
+      //addMessageToChannel(event.data);
     }
   };
 

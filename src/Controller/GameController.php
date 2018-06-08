@@ -107,6 +107,9 @@ class GameController extends Controller
             $game->getBoard()->addCard($card);
             $card->setPosition(50);
 
+            // A random player starts
+            $game->setTurn($game->getMembers()->get(array_rand($game->getMembers()->toArray())));
+
     		$em->flush();
     	}
 

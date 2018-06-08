@@ -11,14 +11,26 @@ $('#hand-container .card').draggable({
 		ws.send(JSON.stringify({
 			action: 'game-dragCard',
 			user: userName,
-			channel: channel
+			channel: channel,
+			data: {cardId: ui.helper.data('id')}
 		}));
+	},
+	stop: function (event, ui) {
+		if (ui.helper.data('dropped') !== true) {
+			ws.send(JSON.stringify({
+				action: 'game-releaseCard',
+				user: userName,
+				channel: channel,
+				data: {cardId: ui.helper.data('id')}
+			}));
+		}
 	}
 });
 
 global.placeholderDropSettings = {
 	accept: '#hand-container .card',
 	drop: function(event, ui) {
+		ui.helper.data('dropped', true);
 		var card = ui.draggable.css({position: 'static'}).detach();
 		var idBefore = $(this).prev('.card').data('id');
 		var idAfter = $(this).next('.card').data('id');

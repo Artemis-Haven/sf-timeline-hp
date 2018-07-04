@@ -9,23 +9,14 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Title</th>
-                <th>DisplayedDate</th>
-                <th>StartDate</th>
-                <th>EndDate</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
+                <th>Content</th>
             </tr>
         </thead>
         <tbody>
         {% for reference in references %}
             <tr>
                 <td>{{ reference.id }}</td>
-                <td>{{ reference.title }}</td>
-                <td>{{ reference.displayedDate }}</td>
-                <td>{{ reference.startDate ? reference.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ reference.endDate ? reference.endDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ reference.createdAt ? reference.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ reference.content }}</td>
                 <td>
                     <a href="{{ path('reference_show', {'id': reference.id}) }}">show</a>
                     <a href="{{ path('reference_edit', {'id': reference.id}) }}">edit</a>

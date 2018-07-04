@@ -10,10 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Entity\Game;
-use App\Entity\Board;
 use App\Entity\Hand;
-use App\Entity\Deck;
-use App\Entity\Card;
+use App\Entity\WhiteDeck;
+use App\Entity\BlackDeck;
+use App\Entity\WhiteCard;
+use App\Entity\BlackCard;
 
 class GameController extends Controller
 {
@@ -50,7 +51,6 @@ class GameController extends Controller
     
     /**
      * @Route("/game-{id}", name="game")
-	 * @ParamConverter("game", class="App:Game")
      * @Template
      */
     public function game(Game $game)
@@ -68,13 +68,13 @@ class GameController extends Controller
     	$em = $this->getDoctrine()->getManager();
 
     	if (!$game->getStarted() && !$game->getEnded()) {
-    		$game->setStarted(true);
-    		$board = new Board();
-    		$game->setBoard($board);
-    		$em->persist($board);
-    		$deck = new Deck();
-    		$game->setDeck($deck);
-    		$em->persist($deck);
+    		$game->start();
+            $whiteDeck = new WhiteDeck();
+            $game->setWhiteDeck($whiteDeck);
+            $em->persist($whiteDeck);
+            $blackDeck = new BlackDeck();
+            $game->setBlackDeck($blackDeck);
+            $em->persist($blackDeck);
     		foreach ($game->getMembers() as $user) {
     			$hand = new Hand();
     			$user->addHand($hand);
@@ -82,31 +82,35 @@ class GameController extends Controller
     			$em->persist($hand);
     		}
 
-    		$referenceCards = $em->getRepository('App:Reference')->findAll();
-    		shuffle($referenceCards);
-            // Creation of the Deck
-    		foreach ($referenceCards as $key => $ref) {
-    			$card = new Card();
-    			$card->setTitle($ref->getTitle());
-    			$card->setDisplayedDate($ref->getDisplayedDate());
-    			$card->setStartDate($ref->getStartDate());
-    			$card->setEndDate($ref->getEndDate());
-    			$card->setPosition($key);
-    			$deck->addCard($card);
-    			$em->persist($card);
-    		}
-            // Each player picks 2 cards from the Deck
-            for ($i=0; $i < 2; $i++) { 
+            $whiteCardsRefs = $em->getRepository('App:WhiteCardReference')->findAll();
+            shuffle($whiteCardsRefs);
+            // Creation of the White Deck
+            foreach ($whiteCardsRefs as $key => $ref) {
+                $card = new WhiteCard($ref->getContent());
+                $whiteDeck->addCard($card);
+                $em->persist($card);
+            }
+
+            $blackCardsRefs = $em->getRepository('App:BlackCardReference')->findAll();
+            shuffle($blackCardsRefs);
+            // Creation of the Black Deck
+            foreach ($blackCardsRefs as $key => $ref) {
+                $card = new BlackCard($ref->getContent(), $ref->getNbrOfBlanks());
+                $blackDeck->addCard($card);
+                $em->persist($card);
+            }
+            // Each player picks 11 cards from the Deck
+            for ($i=0; $i < 11; $i++) { 
                 foreach ($game->getMembers() as $user) {
-                    $pickedCard = $game->getDeck()->popCard();
-                    $game->getHand($user)->pushCard($pickedCard);
+                    $pickedCard = $game->getWhiteDeck()->popCard();
+                    $game->getHand($user)->addWhiteCard($pickedCard);
                 }
             }
-            // One card is placed on the Board
-            $pickedCard = $game->getDeck()->popCard();
-            $game->getBoard()->addCard($card);
-            $card->setPosition(50);
 
+            // One black card is placed on the Board
+            $pickedCard = $game->getBlackDeck()->popCard();
+            $game->setBlackCard($pickedCard);
+            
             // A random player starts
             $game->setTurn($game->getMembers()->get(array_rand($game->getMembers()->toArray())));
 

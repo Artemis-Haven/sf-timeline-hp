@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Reference;
-use App\Form\ReferenceType;
-use App\Repository\ReferenceRepository;
+use App\Entity\WhiteCardReference;
+use App\Form\WhiteCardReferenceType;
+use App\Repository\WhiteCardReferenceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,9 +18,10 @@ class ReferenceController extends Controller
     /**
      * @Route("/", name="reference_index", methods="GET")
      */
-    public function index(ReferenceRepository $referenceRepository): Response
+    public function index(): Response
     {
-        return $this->render('reference/index.html.twig', ['references' => $referenceRepository->findAll()]);
+        $repo = $this->getDoctrine()->getManager()->getRepository('App:WhiteCardReference');
+        return $this->render('reference/index.html.twig', ['references' => $repo->findAll()]);
     }
 
     /**
@@ -28,8 +29,8 @@ class ReferenceController extends Controller
      */
     public function new(Request $request): Response
     {
-        $reference = new Reference();
-        $form = $this->createForm(ReferenceType::class, $reference);
+        $reference = new WhiteCardReference();
+        $form = $this->createForm(WhiteCardReferenceType::class, $reference);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -49,7 +50,7 @@ class ReferenceController extends Controller
     /**
      * @Route("/{id}", name="reference_show", methods="GET")
      */
-    public function show(Reference $reference): Response
+    public function show(WhiteCardReference $reference): Response
     {
         return $this->render('reference/show.html.twig', ['reference' => $reference]);
     }
@@ -57,9 +58,9 @@ class ReferenceController extends Controller
     /**
      * @Route("/{id}/edit", name="reference_edit", methods="GET|POST")
      */
-    public function edit(Request $request, Reference $reference): Response
+    public function edit(Request $request, WhiteCardReference $reference): Response
     {
-        $form = $this->createForm(ReferenceType::class, $reference);
+        $form = $this->createForm(WhiteCardReferenceType::class, $reference);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -77,7 +78,7 @@ class ReferenceController extends Controller
     /**
      * @Route("/{id}", name="reference_delete", methods="DELETE")
      */
-    public function delete(Request $request, Reference $reference): Response
+    public function delete(Request $request, WhiteCardReference $reference): Response
     {
         if ($this->isCsrfTokenValid('delete'.$reference->getId(), $request->request->get('_token'))) {
             $em = $this->getDoctrine()->getManager();

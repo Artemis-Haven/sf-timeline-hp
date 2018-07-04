@@ -11,18 +11,15 @@
     <hr>
     
     {% if game.started %}
-        Board:
-            {% for card in game.board.cards %}
-                <article class="card-placeholder"><div></div></article>
-                <article class="card" data-id='{{card.id}}'>{{card}} <br> {{card.displayedDate}}</article>
-            {% endfor %}
-            <article class="card-placeholder"><div></div></article>
+        Black card:
+        <article class="card" data-id='{{game.blackCard.id}}'>{{game.blackCard.content}}</article>
     {% endif %}
     
     <hr>
 
     {% if game.started %}
-        Deck: {{game.deck.cards|length}}
+        White deck: {{game.whiteDeck.cards|length}} <br>
+        Black deck: {{game.blackDeck.cards|length}}
         <hr>
         <div id="hand-container">
             Hand: <br>
@@ -44,12 +41,6 @@
     {% for opponent in game.members if opponent != app.user  %}
         <aside class="opponent">
             {{ opponent }} 
-            {% if game.started %}
-                ({{opponent.getHand(game).cards|length}}) <br>
-                {% for card in opponent.getHand(game).cards %}
-                    <article class="card" data-id='{{card.id}}'>{{card}}</article>
-                {% endfor %}
-            {% endif %}
         </aside>
     {% endfor %}
     <aside id="ws-content-receiver">

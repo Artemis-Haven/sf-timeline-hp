@@ -26,7 +26,7 @@ class User extends BaseUser
     private $games;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Hand", mappedBy="Owner", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Hand", mappedBy="owner", orphanRemoval=true)
      */
     private $hands;
 

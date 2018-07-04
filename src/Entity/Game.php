@@ -49,16 +49,6 @@ class Game
     private $turn;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Deck", mappedBy="game", cascade={"persist", "remove"})
-     */
-    private $deck;
-
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Board", mappedBy="game", cascade={"persist", "remove"})
-     */
-    private $board;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Hand", mappedBy="game", orphanRemoval=true)
      */
     private $hands;
@@ -68,6 +58,21 @@ class Game
      * @ORM\OrderBy({"createdAt" = "ASC"})
      */
     private $messages;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\BlackDeck", mappedBy="game", cascade={"persist", "remove"})
+     */
+    private $blackDeck;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\WhiteDeck", mappedBy="game", cascade={"persist", "remove"})
+     */
+    private $whiteDeck;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\BlackCard", cascade={"persist", "remove"})
+     */
+    private $blackCard;
 
     public function __toString()
     {
@@ -108,6 +113,13 @@ class Game
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function start(): self
+    {
+        $this->started = true;
 
         return $this;
     }
@@ -173,41 +185,7 @@ class Game
 
         return $this;
     }
-
-    public function getDeck(): ?Deck
-    {
-        return $this->deck;
-    }
-
-    public function setDeck(Deck $deck): self
-    {
-        $this->deck = $deck;
-
-        // set the owning side of the relation if necessary
-        if ($this !== $deck->getGame()) {
-            $deck->setGame($this);
-        }
-
-        return $this;
-    }
-
-    public function getBoard(): ?Board
-    {
-        return $this->board;
-    }
-
-    public function setBoard(Board $board): self
-    {
-        $this->board = $board;
-
-        // set the owning side of the relation if necessary
-        if ($this !== $board->getGame()) {
-            $board->setGame($this);
-        }
-
-        return $this;
-    }
-
+    
     /**
      * @return Collection|Hand[]
      */
@@ -283,16 +261,48 @@ class Game
         return $this;
     }
 
-    public function nextTurn(): self
+    public function getBlackDeck(): ?BlackDeck
     {
-        foreach ($this->members as $member) {
-            if ($member == $this->turn) {
-                $this->turn = $this->members->next();
-                if ($this->turn == null) {
-                    $this->turn == $this->members->first();
-                }
-            }
+        return $this->blackDeck;
+    }
+
+    public function setBlackDeck(BlackDeck $blackDeck): self
+    {
+        $this->blackDeck = $blackDeck;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $blackDeck->getGame()) {
+            $blackDeck->setGame($this);
         }
+
+        return $this;
+    }
+
+    public function getWhiteDeck(): ?WhiteDeck
+    {
+        return $this->whiteDeck;
+    }
+
+    public function setWhiteDeck(WhiteDeck $whiteDeck): self
+    {
+        $this->whiteDeck = $whiteDeck;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $whiteDeck->getGame()) {
+            $whiteDeck->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function getBlackCard(): ?BlackCard
+    {
+        return $this->blackCard;
+    }
+
+    public function setBlackCard(?BlackCard $blackCard): self
+    {
+        $this->blackCard = $blackCard;
 
         return $this;
     }

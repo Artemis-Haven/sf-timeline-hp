@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Board;
+use App\Entity\BlackCard;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * @method Board|null find($id, $lockMode = null, $lockVersion = null)
- * @method Board|null findOneBy(array $criteria, array $orderBy = null)
- * @method Board[]    findAll()
- * @method Board[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method BlackCard|null find($id, $lockMode = null, $lockVersion = null)
+ * @method BlackCard|null findOneBy(array $criteria, array $orderBy = null)
+ * @method BlackCard[]    findAll()
+ * @method BlackCard[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class BoardRepository extends ServiceEntityRepository
+class BlackCardRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, Board::class);
+        parent::__construct($registry, BlackCard::class);
     }
 
 //    /**
-//     * @return Board[] Returns an array of Board objects
+//     * @return BlackCard[] Returns an array of BlackCard objects
 //     */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class BoardRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Board
+    public function findOneBySomeField($value): ?BlackCard
     {
         return $this->createQueryBuilder('b')
             ->andWhere('b.exampleField = :val')

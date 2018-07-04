@@ -7,9 +7,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\HandRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\WhiteDeckRepository")
  */
-class Hand
+class WhiteDeck
 {
     /**
      * @ORM\Id()
@@ -19,32 +19,19 @@ class Hand
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Game", inversedBy="hands")
+     * @ORM\OneToOne(targetEntity="App\Entity\Game", inversedBy="whiteDeck", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $game;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="hands")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $owner;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\WhiteCard", mappedBy="hand", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"position" = "asc"})
+     * @ORM\OneToMany(targetEntity="App\Entity\WhiteCard", mappedBy="whiteDeck")
      */
     private $whiteCards;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $points;
 
     public function __construct()
     {
         $this->whiteCards = new ArrayCollection();
-        $this->points = 0;
     }
 
     public function getId()
@@ -57,21 +44,9 @@ class Hand
         return $this->game;
     }
 
-    public function setGame(?Game $game): self
+    public function setGame(Game $game): self
     {
         $this->game = $game;
-
-        return $this;
-    }
-
-    public function getOwner(): ?User
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(?User $owner): self
-    {
-        $this->owner = $owner;
 
         return $this;
     }
@@ -83,6 +58,10 @@ class Hand
     {
         return $this->whiteCards;
     }
+
+    /**
+     * @return Collection|WhiteCard[]
+     */
     public function getCards(): Collection
     {
         return $this->getWhiteCards();
@@ -92,10 +71,15 @@ class Hand
     {
         if (!$this->whiteCards->contains($whiteCard)) {
             $this->whiteCards[] = $whiteCard;
-            $whiteCard->setHand($this);
+            $whiteCard->setWhiteDeck($this);
         }
 
         return $this;
+    }
+
+    public function addCard(WhiteCard $whiteCard): self
+    {
+        return $this->addWhiteCard($whiteCard);
     }
 
     public function removeWhiteCard(WhiteCard $whiteCard): self
@@ -103,23 +87,23 @@ class Hand
         if ($this->whiteCards->contains($whiteCard)) {
             $this->whiteCards->removeElement($whiteCard);
             // set the owning side to null (unless already changed)
-            if ($whiteCard->getHand() === $this) {
-                $whiteCard->setHand(null);
+            if ($whiteCard->getWhiteDeck() === $this) {
+                $whiteCard->setWhiteDeck(null);
             }
         }
 
         return $this;
     }
 
-    public function getPoints(): ?int
+    public function removeCard(WhiteCard $whiteCard): self
     {
-        return $this->points;
+        return $this->removeWhiteCard($whiteCard);
     }
 
-    public function setPoints(int $points): self
+    public function popCard(): WhiteCard
     {
-        $this->points = $points;
-
-        return $this;
+        $card = $this->getWhiteCards()->first();
+        $this->removeWhiteCard($card);
+        return $card;
     }
 }

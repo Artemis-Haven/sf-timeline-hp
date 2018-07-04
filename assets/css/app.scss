@@ -46,9 +46,9 @@ html, body, #main-container {
 	display: inline-block;
 	margin: 3px 5px;
 	height: 70px;
-	width: 50px;
+	width: 100px;
 	background-color: #eee;
-    opacity: 0;
+    opacity: 0.5;
     border:  5px #ddd dashed;
     border-radius: 10px;
 	vertical-align: top;
@@ -60,8 +60,7 @@ html, body, #main-container {
     flex: 1 1 auto;
 }
 .card-placeholder.ui-droppable-hover {
-    width: 100px;
-    opacity: 0.5;
+    opacity: 1;
 }
 .card-placeholder > div {
     display: flex;

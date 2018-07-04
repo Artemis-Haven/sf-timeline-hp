@@ -7,47 +7,31 @@ require('bootstrap-sass');
 
 $('#hand-container .card').draggable({
 	revert: 'invalid',
-	start: function (event, ui) {
-		ws.send(JSON.stringify({
-			action: 'game-dragCard',
-			user: userName,
-			channel: channel,
-			data: {cardId: ui.helper.data('id')}
-		}));
-	},
-	stop: function (event, ui) {
-		if (ui.helper.data('dropped') !== true) {
-			ws.send(JSON.stringify({
-				action: 'game-releaseCard',
-				user: userName,
-				channel: channel,
-				data: {cardId: ui.helper.data('id')}
-			}));
-		}
-	}
+	containment: '#board-container',
 });
 
-global.placeholderDropSettings = {
+placeholderDropSettings = {
 	accept: '#hand-container .card',
 	drop: function(event, ui) {
-		ui.helper.data('dropped', true);
+		//ui.helper.data('dropped', true);
+		var currentCard = $(this).find('article.card').detach();
 		var card = ui.draggable.css({position: 'static'}).detach();
-		var idBefore = $(this).prev('.card').data('id');
-		var idAfter = $(this).next('.card').data('id');
-	    if (idBefore) {
-			$(this).after(card);
-	        $('<article class="card-placeholder"></article>').insertAfter(card).droppable(placeholderDropSettings);
-	    } else {
-			$(this).before(card);
-	        $('<article class="card-placeholder"></article>').insertBefore(card).droppable(placeholderDropSettings);
-	    }
-
-		ws.send(JSON.stringify({
+		$(this).append(card);
+		$('#hand-container').append(currentCard);
+		if ($('#board-container .card-placeholder').length == $('#board-container .card-placeholder article.card').length) {
+			ws.send(JSON.stringify({
+				action: 'game-submitCards',
+				user: userName,
+				channel: channel,
+				data: [{position: 1, cardId: card.data('id')}]
+			}));
+		}
+		/*ws.send(JSON.stringify({
 			action: 'game-dropCard',
 			user: userName,
 			channel: channel,
 			data: {cardId: card.data('id'), idBefore: idBefore, idAfter: idAfter}
-		}));
+		}));*/
 	}
 };
 

@@ -3,6 +3,8 @@
 {% block title %}Hello World!{% endblock %}
 
 {% block body %}
+{% set hand = app.user.getHand(game) %}
+
 <div id="board-container">
     
     <h1>Name: {{game}} <small><a href="{{ path('quit_game', {'id': game.id}) }}">{% if game.started %}Abandon {% else %}Quit{% endif %}</a></small></h1>
@@ -13,6 +15,14 @@
     {% if game.started %}
         Black card:
         <article class="card" data-id='{{game.blackCard.id}}'>{{game.blackCard.content}}</article>
+        {% for i in 1..(game.blackCard.nbrOfBlanks) %}
+            <article class="card-placeholder" data-position="{{ i }}">
+                {% for card in hand.cards if card.selected and card.position == i %}
+                    <article class="card" data-id='{{card.id}}'>{{card.content}}</article>
+                {% endfor %}
+            </article>
+        {% endfor %}
+
     {% endif %}
     
     <hr>
@@ -23,7 +33,7 @@
         <hr>
         <div id="hand-container">
             Hand: <br>
-            {% for card in app.user.getHand(game).cards %}
+            {% for card in hand.cards if not card.selected %}
                 <article class="card" data-id='{{card.id}}'>{{card}}</article>
             {% else %}
                 No item yet

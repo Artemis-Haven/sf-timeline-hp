@@ -31,14 +31,8 @@ class GameActions
         }
 
         switch ($action) {
-            case 'game-releaseCard':
-                $this->releaseCard($data);
-                return true;
-            case 'game-dragCard':
-                $this->dragCard($data);
-                return true;
-            case 'game-dropCard':
-                $this->dropCard($data);
+            case 'game-submitCards':
+                $this->submitCards($data);
                 return true;
             default:
                 echo sprintf('Action "%s" is not supported yet!', $data->action);
@@ -48,31 +42,22 @@ class GameActions
         return true;
     }
 
-    private function releaseCard($data)
+    private function submitCards($data)
     {
-        $this->sendDataToChannel($data);
-    }
+        foreach ($data as $cardData) {
+            $card = $this->em->getRepository('App:WhiteCard')->find($cardData['cardId']);
+            foreach ($card->getHand()->getCards() as $otherCard) {
+                if ($otherCard != $card) {
+                    $otherCard->setSelected(false);
+                    $otherCard->setPosition(null);
+                }
+            }
+            $card->setSelected(true);
+            $card->setPosition($cardData['position']);
+        }
 
-    private function dragCard($data)
-    {
-        $this->sendDataToChannel($data);
-    }
-
-    private function dropCard($data)
-    {
-        $card = $this->em->getRepository('App:Card')->find($data['cardId']);
-        $cardBefore = (array_key_exists('idBefore', $data) ? $this->em->getRepository('App:Card')->find($data['idBefore']) : null);
-        $cardAfter = (array_key_exists('idAfter', $data) ? $this->em->getRepository('App:Card')->find($data['idAfter']) : null);
-        $game = $card->getHand()->getGame();
-
-        $card->getHand()->removeCard($card);
-        $game->getBoard()->addCard($card);
-        $positionBefore = ($cardBefore ? $cardBefore->getPosition() : -1000);
-        $positionAfter = ($cardAfter ? $cardAfter->getPosition() : 1000);
-        $card->setPosition(($positionAfter+$positionBefore)/2);
         $this->em->flush();
-
-        $this->sendDataToChannel($data);
+        $this->sendMessageToChannel($this->user.' a joué.');
     }
 
     private function sendDataToChannel($data)

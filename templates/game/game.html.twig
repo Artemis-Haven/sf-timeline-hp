@@ -15,14 +15,24 @@
     {% if game.started %}
         Black card:
         <article class="card" data-id='{{game.blackCard.id}}'>{{game.blackCard.content}}</article>
-        {% for i in 1..(game.blackCard.nbrOfBlanks) %}
-            <article class="card-placeholder" data-position="{{ i }}">
-                {% for card in hand.cards if card.selected and card.position == i %}
-                    <article class="card" data-id='{{card.id}}'>{{card.content}}</article>
-                {% endfor %}
-            </article>
-        {% endfor %}
-
+        <section id="board-select-cards">
+            {% for i in 1..(game.blackCard.nbrOfBlanks) if game.state == constant('STATE_SELECT_CARD', game) %}
+                <article class="card-placeholder" data-position="{{ i }}">
+                    {% for card in hand.cards if card.selected and card.position == i %}
+                        <article class="card" data-id='{{card.id}}'>{{card.content}}</article>
+                    {% endfor %}
+                </article>
+            {% endfor %}
+        </section>
+        <section id="board-elect-cards">
+            {% for hand in game.hands if game.state == constant('STATE_ELECT_CARD', game) %}
+                <div>
+                    {% for card in hand.selectedCards %}
+                        <article class="card" data-id="{{card.id}}">{{card.content}}</article>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </section>
     {% endif %}
     
     <hr>

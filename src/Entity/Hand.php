@@ -32,7 +32,6 @@ class Hand
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\WhiteCard", mappedBy="hand", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"position" = "asc"})
      */
     private $whiteCards;
 
@@ -88,6 +87,18 @@ class Hand
         return $this->getWhiteCards();
     }
 
+    public function getSelectedCards(): Collection
+    {
+        $collection = $this->getWhiteCards()->filter(function($card) {
+            return $card->getSelected();
+        });
+        $iterator = $collection->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return ($a->getPosition() < $b->getPosition()) ? -1 : 1;
+        });
+        return new ArrayCollection(iterator_to_array($iterator));
+    }
+
     public function addWhiteCard(WhiteCard $whiteCard): self
     {
         if (!$this->whiteCards->contains($whiteCard)) {
@@ -121,5 +132,16 @@ class Hand
         $this->points = $points;
 
         return $this;
+    }
+
+    public function areCardsSubmitted(): bool
+    {
+        $nbrOfSelectedCards = 0;
+        foreach ($this->getCards() as $card) {
+            if ($card->getSelected()) {
+                $nbrOfSelectedCards++;
+            }
+        }
+        return ($nbrOfSelectedCards == $this->getGame()->getBlackCard()->getNbrOfBlanks());
     }
 }

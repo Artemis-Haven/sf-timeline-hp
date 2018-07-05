@@ -3,6 +3,7 @@ namespace App\Server;
 
 use Ratchet\ConnectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use App\Entity\Game;
 
 class GameActions
 {
@@ -44,28 +45,59 @@ class GameActions
 
     private function submitCards($data)
     {
+        $game = null;
+        // On sélectionne chaque carte et on définit sa position
         foreach ($data as $cardData) {
             $card = $this->em->getRepository('App:WhiteCard')->find($cardData['cardId']);
+            $card->setSelected(true);
+            $card->setPosition($cardData['position']);
+            // S'il existe déjà une carte dans la même position, on la remet dans la main
             foreach ($card->getHand()->getCards() as $otherCard) {
-                if ($otherCard != $card) {
+                if ($otherCard != $card && $otherCard->getPosition() == $card->getPosition()) {
                     $otherCard->setSelected(false);
                     $otherCard->setPosition(null);
                 }
             }
-            $card->setSelected(true);
-            $card->setPosition($cardData['position']);
+            $game = $card->getHand()->getGame();
+        }
+        $this->sendMessageToChannel($this->user.' a joué.');
+
+        // On vérifie si tout les joueurs (sauf le meneur de ce tour) ont joué
+        $allMembersHavePlayed = true;
+        foreach ($game->getHands() as $hand) {
+            if (!$hand->areCardsSubmitted() && $hand->getOwner() != $game->getTurn()) {
+                $allMembersHavePlayed = false;
+                break;
+            }
+        }
+        // Si tous les joueurs (sauf le meneur de ce tour) ont joué, envoyer un message
+        // et passer à la phase suivante (choix de la meilleure carte)
+        if ($allMembersHavePlayed) {
+            $this->sendMessageToChannel("Tout le monde a joué. C'est à ".$game->getTurn()." de décider de la meilleure carte.");
+            $selectedCards = [];
+            foreach ($game->getHands() as $hand) {
+                $handSelectedCards = [];
+                foreach ($hand->getSelectedCards() as $card) {
+                    $handSelectedCards[] = ['id' => $card->getId(), 'content' => $card->getContent()];
+                }
+                if (!empty($handSelectedCards)) {
+                    $selectedCards[] = $handSelectedCards;
+                }
+            }
+            $game->setState(Game::STATE_ELECT_CARD);
+            $this->sendDataToChannel('game-electCards', ['elector' => $game->getTurn()->getUsername(), 'selectedCards' => $selectedCards]);
+            // TODO : passage à la phase de choix des cartes
         }
 
-        $this->em->flush();
-        $this->sendMessageToChannel($this->user.' a joué.');
+        $this->em->flush();        
     }
 
-    private function sendDataToChannel($data)
+    private function sendDataToChannel($action, $data)
     {
         foreach ($this->users as $connectionId => $userConnection) {
             if (array_key_exists($this->channel, $userConnection['channels'])) {
                 $userConnection['connection']->send(json_encode([
-                    'action' => $this->action,
+                    'action' => $action,
                     'channel' => $this->channel,
                     'user' => $this->user,
                     'data' => $data

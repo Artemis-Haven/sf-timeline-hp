@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Game
 {
+    const STATE_SELECT_CARD = 'SELECT';
+    const STATE_ELECT_CARD = 'ELECT';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -74,6 +77,11 @@ class Game
      */
     private $blackCard;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $state;
+
     public function __toString()
     {
         return $this->name;
@@ -120,6 +128,7 @@ class Game
     public function start(): self
     {
         $this->started = true;
+        $this->setState(self::STATE_SELECT_CARD);
 
         return $this;
     }
@@ -303,6 +312,20 @@ class Game
     public function setBlackCard(?BlackCard $blackCard): self
     {
         $this->blackCard = $blackCard;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(?string $state): self
+    {
+        if (in_array($state, [self::STATE_SELECT_CARD, self::STATE_ELECT_CARD])) {
+            $this->state = $state;
+        }
 
         return $this;
     }

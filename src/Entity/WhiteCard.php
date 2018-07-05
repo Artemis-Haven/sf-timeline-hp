@@ -12,11 +12,13 @@ class WhiteCard extends WhiteCardReference
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\WhiteDeck", inversedBy="whiteCards")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $whiteDeck;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Hand", inversedBy="whiteCards")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Hand", inversedBy="whiteCards", fetch="EAGER")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $hand;
 

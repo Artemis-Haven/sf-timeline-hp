@@ -17,6 +17,7 @@ placeholderDropSettings = {
 		var currentCard = $(this).find('article.card').detach();
 		var card = ui.draggable.css({position: 'static'}).detach();
 		$(this).append(card);
+		card.droppable(placeholderDropSettings);
 		$('#hand-container').append(currentCard);
 		if ($('#board-container .card-placeholder').length == $('#board-container .card-placeholder article.card').length) {
 			ws.send(JSON.stringify({

@@ -35,6 +35,9 @@ class GameActions
             case 'game-submitCards':
                 $this->submitCards($data);
                 return true;
+            case 'game-electCards':
+                $this->electCards($data);
+                return true;
             default:
                 echo sprintf('Action "%s" is not supported yet!', $data->action);
                 break;
@@ -90,6 +93,22 @@ class GameActions
         }
 
         $this->em->flush();        
+    }
+
+    private function electCards($data)
+    {
+        $card = $this->em->getRepository('App:WhiteCard')->find($data['cardId']);
+        $winner = $card->getHand()->getOwner();
+        $game = $card->getHand()->getGame();
+        $card->getHand()->addonePoint();
+        $previousWinner = $game->getTurn();
+        $game->setTurn($winner);
+        $game->setState(Game::STATE_SELECT_CARD);
+        $this->sendMessageToChannel($previousWinner." a choisi la carte de ".$winner.' : '.$card->getContent());
+        // TODO distribuer une ou des nouvelles cartes blanches
+        // TODO piocher une nouvelle carte noire
+        // TODO renvoyer des infos concernant le décompte des points, les nouvelles cartes piochées, la nouvelle carte noire
+        //$this->em->flush();
     }
 
     private function sendDataToChannel($action, $data)

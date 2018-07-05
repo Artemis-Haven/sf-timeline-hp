@@ -134,6 +134,13 @@ class Hand
         return $this;
     }
 
+    public function addOnePoint(): self
+    {
+        $this->points++;
+
+        return $this;
+    }
+
     public function areCardsSubmitted(): bool
     {
         $nbrOfSelectedCards = 0;

@@ -27,13 +27,16 @@ placeholderDropSettings = {
 				data: [{position: 1, cardId: card.data('id')}]
 			}));
 		}
-		/*ws.send(JSON.stringify({
-			action: 'game-dropCard',
-			user: userName,
-			channel: channel,
-			data: {cardId: card.data('id'), idBefore: idBefore, idAfter: idAfter}
-		}));*/
 	}
 };
+
+$('#board-elect-cards').click('article.card', function (elt) {
+	ws.send(JSON.stringify({
+		action: 'game-electCards',
+		user: userName,
+		channel: channel,
+		data: {cardId: $(elt.target).data('id')}
+	}));
+});
 
 $('#board-container .card-placeholder').droppable(placeholderDropSettings);

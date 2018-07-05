@@ -58,9 +58,9 @@
 </div>
 <div id="board-sidebar">
     
-    {% for opponent in game.members if opponent != app.user  %}
+    {% for player in game.members  %}
         <aside class="opponent">
-            {{ opponent }} 
+            {{ player }} : {{ player.hand(game).points }}
         </aside>
     {% endfor %}
     <aside id="ws-content-receiver">
